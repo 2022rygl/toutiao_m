@@ -8,7 +8,12 @@
     "paths": {
       "@/*": [
         "src/*"
-      ]
+      ],"cpns/*": [
+        "src/components/*"
+      ],
+      "views/*": [
+        "src/views/*"
+      ],
     },
     "lib": [
       "esnext",
