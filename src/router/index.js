@@ -7,8 +7,33 @@ Vue.use(VueRouter)
 // 路由懒加载
 // - 等使用到了路由页面，再去请求
 
+// 懒加载的chunk 默认的名字是模块的路径
+// /* webpackChunkName: ' 新名字' */
 const routes = [
-  { path: '/', redirect: '/login' },
+  {
+    path: '/ ',
+    component: () => import('views/Layout'),
+    // redirect: '',
+    children: [
+      {
+        path: '',
+        component: () => import('views/Home')
+      },
+      {
+        path: 'video',
+        component: () => import('views/Video')
+      },
+      {
+        path: 'qa',
+        component: () => import('views/Qa')
+      },
+      {
+        path: 'profile',
+        component: () => import('views/Profile')
+      }
+    ]
+  },
+
   {
     path: '/login',
     component: () => import('views/Login')

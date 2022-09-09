@@ -86,6 +86,7 @@ export default {
         console.log(data)
         // 将 token 存进 vuex
         this.SetToken(data.data)
+        this.$router.push('/profile')
         this.$toast.success('登录成功')
       } catch (error) {
         // 细分失败：提示用户手机号和验证码
