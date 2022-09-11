@@ -26,3 +26,12 @@ export const sendCodeAPI = (mobile) =>
   request({
     url: `/v1_0/sms/codes/${mobile}`
   })
+
+// 获取用户自己信息
+export const getUserInfoAPI = () =>
+  request({
+    url: '/v1_0/user'
+    // headers: {
+    //   Authorization: `Bearer ${store.state.tokenObj.token}`
+    // }
+  })

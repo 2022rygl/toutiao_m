@@ -11,9 +11,9 @@
               round
               width="1.5rem"
               height="1.5rem"
-              src="https://img01.yzcdn.cn/vant/cat.jpeg"
+              :src="userInfo.photo"
             />
-            <span class="mobile"> 13111111111 </span>
+            <span class="mobile"> {{ userInfo.name }} </span>
           </van-row>
         </van-col>
         <van-col span="5"> </van-col>
@@ -32,16 +32,16 @@
       <van-row>
         <van-grid class="grid" :border="false">
           <van-grid-item text="头条">
-            <template #icon>11</template>
+            <template #icon>{{ userInfo.art_count }}</template>
           </van-grid-item>
           <van-grid-item text="粉丝">
-            <template #icon>22</template>
+            <template #icon>{{ userInfo.fans_count }}</template>
           </van-grid-item>
           <van-grid-item text="关注">
-            <template #icon>33</template>
+            <template #icon>{{ userInfo.follow_count }}</template>
           </van-grid-item>
           <van-grid-item text="获赞">
-            <template #icon>44</template>
+            <template #icon>{{ userInfo.like_count }}</template>
           </van-grid-item>
         </van-grid>
       </van-row>
@@ -90,11 +90,14 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { getUserInfoAPI } from '@/api'
 export default {
   name: 'MyIndex',
   props: {},
   data() {
-    return {}
+    return {
+      userInfo: {}
+    }
   },
   components: {},
   watch: {},
@@ -108,12 +111,27 @@ export default {
         message: '是否确认退出该账号'
       })
       this.$store.commit('SetToken', {})
+    },
+    // 获取用户信息
+    async getUserInfo() {
+      try {
+        const { data } = await getUserInfoAPI()
+        console.log(data)
+        this.userInfo = data.data
+      } catch (error) {
+        // console.log(error)
+        if (error.response && error.response.status === 401) {
+          this.$toast.fail('用户认证失败，请重新登录')
+        } else {
+          throw error
+        }
+      }
     }
   },
   // 生命周期 - 创建完成（访问当前this实例）
-  created() {},
-  // 生命周期 - 挂载完成（访问DOM元素）
-  mounted() {}
+  created() {
+    if (this.isLogin) this.getUserInfo()
+  }
 }
 </script>
 <style lang="less" scoped>
@@ -145,7 +163,7 @@ export default {
       flex: 1;
     }
     .mobile {
-      font-size: 30px;
+      font-size: 26px;
       color: #fff;
     }
     .van-col {

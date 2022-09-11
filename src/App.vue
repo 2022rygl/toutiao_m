@@ -5,8 +5,4 @@
   </div>
 </template>
 
-<style lang="less">
-h1 {
-  font-size: 30px;
-}
-</style>
+<style lang="less"></style>
