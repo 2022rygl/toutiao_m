@@ -32,6 +32,6 @@ export const getUserInfoAPI = () =>
   request({
     url: '/v1_0/user'
     // headers: {
-    //   Authorization: `Bearer ${store.state.tokenObj.token}`
+    //   Authorization:
     // }
   })
