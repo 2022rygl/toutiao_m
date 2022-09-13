@@ -10,13 +10,27 @@
       <van-tab :title="item.name" v-for="item in channels" :key="item.id">
         <ArticleList :id="item.id"></ArticleList>
       </van-tab>
-      <span class="toutiao toutiao-gengduo"></span>
+      <span class="toutiao toutiao-gengduo" @click="isShow = !isShow"></span>
     </van-tabs>
+    <!-- 弹出层 -->
+    <van-popup
+      v-model="isShow"
+      closeable
+      close-icon-position="top-left"
+      position="bottom"
+      :style="{ height: '100%' }"
+    >
+      <ChannelEdit
+        :myChannels="channels"
+        @changeActive=";[(isShow = false), (active = $event)]"
+      ></ChannelEdit>
+    </van-popup>
   </div>
 </template>
 
 <script>
-import ArticleList from 'cpns/ArticleList'
+import ChannelEdit from './components/ChannelEdit.vue'
+import ArticleList from '../Home/components/ArticleList.vue'
 import { getUserChannelsAPI } from '@/api'
 export default {
   name: 'HomeIndex',
@@ -24,10 +38,11 @@ export default {
   data() {
     return {
       active: 0,
-      channels: []
+      channels: [],
+      isShow: false
     }
   },
-  components: { ArticleList },
+  components: { ArticleList, ChannelEdit },
   watch: {},
   computed: {},
   // 1. ?? ==>相对于 || ，常用于语句
@@ -55,6 +70,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .home {
+  padding-bottom: 135px;
   .navbar {
     background-color: #3296fa;
 
@@ -127,5 +143,7 @@ export default {
       background-image: url('@/assets/imgs/gradient-gray-line.png');
     }
   }
+
+  // 弹出层
 }
 </style>
