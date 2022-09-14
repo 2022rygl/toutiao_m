@@ -21,8 +21,11 @@
       :style="{ height: '100%' }"
     >
       <ChannelEdit
+        v-if="isShow"
         :myChannels="channels"
         @changeActive=";[(isShow = false), (active = $event)]"
+        @delChannels="delChannelsFn"
+        @addChannels="addChannelsFn"
       ></ChannelEdit>
     </van-popup>
   </div>
@@ -31,7 +34,8 @@
 <script>
 import ChannelEdit from './components/ChannelEdit.vue'
 import ArticleList from '../Home/components/ArticleList.vue'
-import { getUserChannelsAPI } from '@/api'
+import { getUserChannelsAPI, delChannelsAPI, addChannelsAPI } from '@/api'
+import { mapGetters, mapMutations } from 'vuex'
 export default {
   name: 'HomeIndex',
   props: {},
@@ -44,14 +48,32 @@ export default {
   },
   components: { ArticleList, ChannelEdit },
   watch: {},
-  computed: {},
+  computed: {
+    ...mapGetters(['isLogin'])
+  },
   // 1. ?? ==>相对于 || ，常用于语句
   // 2. ?. ==> 可选链操作符， ?前面是undefined ，那么不会往后面取值
   methods: {
+    ...mapMutations(['SET_MY_CHANNELS']),
+    initChannels() {
+      if (this.isLogin) {
+        // 已登录，发送请求获取用户自己的频道
+        this.getUserChannels()
+      } else {
+        // 未登录
+        // 先判断本地存储有没有数据，没有再发送请求，请求默认的频道数据
+        const myChannels = this.$store.state.myChannels
+        if (myChannels.length === 0) {
+          this.getUserChannels()
+        } else {
+          this.channels = myChannels
+        }
+      }
+    },
     async getUserChannels() {
       try {
         const { data } = await getUserChannelsAPI()
-        console.log(data)
+        // console.log(data)
         this.channels = data.data.channels
       } catch (error) {
         if (!error.response) {
@@ -60,11 +82,48 @@ export default {
           error.response.status === 507 && this.$toast.fail('请刷新')
         }
       }
+    },
+    async delChannelsFn(id) {
+      try {
+        const newChannels = this.channels.filter((item) => item.id !== id)
+        if (this.isLogin) {
+          await delChannelsAPI(id)
+        } else {
+          this.SET_MY_CHANNELS(newChannels)
+        }
+        // 视图更新
+        this.channels = newChannels
+        this.$toast.success('删除频道成功')
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.$toast.fail('请登录再删除')
+        } else {
+          throw error
+        }
+      }
+    },
+    async addChannelsFn(channel) {
+      try {
+        if (this.isLogin) {
+          await addChannelsAPI(channel.id, this.channels.length)
+        } else {
+          this.SET_MY_CHANNELS([...this.channels, channel])
+        }
+        // 视图添加
+        this.channels.push(channel)
+        this.$toast.success('添加频道成功')
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.$toast.fail('请登录再添加')
+        } else {
+          throw error
+        }
+      }
     }
   },
   // 生命周期 - 创建完成（访问当前this实例）
   created() {
-    this.getUserChannels()
+    this.initChannels()
   }
 }
 </script>

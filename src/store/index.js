@@ -15,14 +15,15 @@ export default new Vuex.Store({
     createPersistedState({
       key: TOKEN_HMTT,
       // storeage:window.sessionStorage
-      reducer({ tokenObj }) {
-        return { tokenObj }
+      reducer({ tokenObj, myChannels }) {
+        return { tokenObj, myChannels }
       }
     })
   ],
 
   state: {
-    tokenObj: {}
+    tokenObj: {},
+    myChannels: []
   },
   getters: {
     isLogin(state) {
@@ -33,6 +34,13 @@ export default new Vuex.Store({
   mutations: {
     SetToken(state, data) {
       state.tokenObj = data
+    },
+    /**
+     *设置 channels
+     * @param {Array} channels  删除或者添加之后最新的频道
+     */
+    SET_MY_CHANNELS(state, channels) {
+      state.myChannels = channels
     }
   },
   actions: {},
