@@ -2,7 +2,14 @@
   <div class="home">
     <van-nav-bar class="navbar">
       <template #title>
-        <van-button size="small" round block icon="search">搜索</van-button>
+        <van-button
+          size="small"
+          round
+          block
+          icon="search"
+          @click="$router.push('/search')"
+          >搜索</van-button
+        >
       </template>
     </van-nav-bar>
 
